@@ -4,8 +4,10 @@ import { StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'; // Usar createNativeStackNavigator
 import Login from './components/Login';
-import Register from './components/Register';
-import NewPassword from './components/NewPassword';
+import Registro from './components/Registro';
+import Inicio from './components/Inicio';
+import RecuperarContrasena from './components/RecuperarContrasena';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -19,15 +21,21 @@ export default function App() {
           options={{ headerShown: false }} // Deshabilitar el header para la pantalla de login
         />
         <Stack.Screen
-          name="Register"
-          component={Register}
+          name="Registro"
+          component={Registro}
           options={{ headerShown: false }} // Deshabilitar el header para la pantalla de registro
         />
         <Stack.Screen
-          name="NewPassword"
-          component={NewPassword}
-          options={{ headerShown: false }} // Deshabilitar el header para la pantalla de nueva contraseña
+          name="Inicio"
+          component={Inicio}
+          options={{ headerShown: false }} // Deshabilitar el header para la pantalla de inicio
         />
+        <Stack.Screen
+          name="RecuperarContrasena"
+          component={RecuperarContrasena}
+          options={{ headerShown: false }} // Deshabilitar el header para la pantalla de inicio
+        />
+
       </Stack.Navigator>
       <StatusBar style="auto" />
     </NavigationContainer>

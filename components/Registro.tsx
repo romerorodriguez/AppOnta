@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, Image, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, KeyboardAvoidingView, Alert } from 'react-native';
+import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -9,28 +10,59 @@ import { Checkbox } from 'react-native-paper';
 
 type RootStackParamList = {
   Login: undefined;
-  Register: undefined;
+  Registro: undefined;
+  Inicio: { nombre: string };
 };
 
-type RegisterScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Register'>;
-type RegisterScreenRouteProp = RouteProp<RootStackParamList, 'Register'>;
+type RegistroScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Registro'>;
+type RegistroScreenRouteProp = RouteProp<RootStackParamList, 'Registro'>;
 
-type RegisterProps = {
-  navigation: RegisterScreenNavigationProp;
-  route: RegisterScreenRouteProp;
+type RegistroProps = {
+  navigation: RegistroScreenNavigationProp;
+  route: RegistroScreenRouteProp;
 };
 
-const Register: React.FC<RegisterProps> = ({ navigation }) => {
+const Registro: React.FC<RegistroProps> = ({ navigation }) => {
   const [nombre, setNombre] = useState('');
   const [correo, setCorreo] = useState('');
   const [contraseña, setContraseña] = useState('');
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleRegistro = async () => {
+    // Validar que los campos no estén vacíos
+    setErrorMessage('');
+    if (!nombre || !correo || !contraseña) {
+      setErrorMessage('Favor de completar todos los campos');
+      return;
+    }
+
+    if (!aceptaTerminos) {
+      setErrorMessage('Favor de aceptar términos y condiciones');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3000/register', {
+        nombre,
+        correo,
+        contraseña,
+        aceptaTerminos,
+      });
+      console.log(response.data);
+      navigation.navigate('Inicio', { nombre }); // Navegar a la pantalla de inicio con el nombre del usuario
+    } catch (error) {
+      //console.error('Error al registrar el usuario:', error);
+      console.log(error);
+      Alert.alert('Error al registrar el usuario');
+    }
+  };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <Background />
       <View style={styles.logoContainer}>
-        <Image source={require('../assets/logo.jpg')} style={styles.logo} />
+        {/* <Image source={require('../assets/logo.jpg')} style={styles.logo} /> */}
       </View>
       <Text style={[styles.texto, fontStyles.twCenMT]}>Registro</Text>
       <View style={styles.formContainer}>
@@ -66,14 +98,15 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
           />
         </View>
         <Checkbox.Item
-          label="Acepto Terminos y Condiciones"
+          label="Acepto Términos y Condiciones"
           status={aceptaTerminos ? 'checked' : 'unchecked'}
           onPress={() => setAceptaTerminos(!aceptaTerminos)}
           color="#01063E"
           labelStyle={styles.checkboxLabel}
         />
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => console.log('Registrado')}>
+      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+      <TouchableOpacity style={styles.button} onPress={handleRegistro}>
         <Text style={styles.buttonText}>Registrar</Text>
       </TouchableOpacity>
       <Text style={styles.registrarText}>
@@ -159,6 +192,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'regular',
   },
+  errorText: {
+    color: 'black',
+    marginBottom: 10,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 15,
+    marginTop: 15,
+  },
 });
 
-export default Register;
+export default Registro;
