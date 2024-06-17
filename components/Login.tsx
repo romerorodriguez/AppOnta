@@ -5,6 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import Background from './Background';
 import { fontStyles } from '../styles';
+import { Feather } from '@expo/vector-icons'
 import axios from 'axios';
 //autenticacion de usuarios con firebase
 // import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
@@ -94,6 +95,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
             onChangeText={setContraseña}
             value={contraseña}
           />
+          {/* <Feather name={showPassword ? "eye" : "eye-off"} size={24} color="black" /> */}
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'flex-end', width: '100%' }}>
           <Text style={styles.olvidasteContraseñaText} onPress={() => navigation.navigate('RecuperarContrasena')}>¿Olvidaste tu contraseña?</Text>

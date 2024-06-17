@@ -1,16 +1,37 @@
-import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Background from './Background';
 import { Ionicons } from '@expo/vector-icons';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from './types';
 
 type RouteParams = {
   nombre: string;
 };
 
+type InicioScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Inicio'>; // Define el tipo de navegación
+
 const Inicio = () => {
+  const navigation = useNavigation<InicioScreenNavigationProp>(); // Usa el tipo de navegación
   const route = useRoute();
   const { nombre } = route.params as RouteParams; // Obtenemos el nombre del usuario registrado
+
+  const [showOptions, setShowOptions] = useState(false);
+
+  const toggleOptions = () => {
+    setShowOptions(!showOptions);
+  };
+
+  const handleCrearCategoria = () => {
+    navigation.navigate('CrearCategoria');
+    setShowOptions(false); // Oculta las opciones después de navegar
+  };
+
+  const handleCrearArticulo = () => {
+    navigation.navigate('CrearArticulo');
+    setShowOptions(false); // Oculta las opciones después de navegar
+  };
 
   return (
     <View style={styles.container}>
@@ -34,7 +55,19 @@ const Inicio = () => {
         </View>
         <View style={styles.categoriesContainer}>
           <Text style={styles.text3}>Categorías</Text>
-          <Ionicons name="ellipsis-horizontal" size={24} color="#ffffff" style={styles.categoriesIcon} />
+          <TouchableOpacity onPress={toggleOptions}>
+            <Ionicons name="ellipsis-horizontal" size={24} color="#ffffff" style={styles.categoriesIcon} />
+          </TouchableOpacity>
+          {showOptions && (
+            <View style={styles.optionsContainer}>
+              <TouchableOpacity onPress={handleCrearCategoria}>
+                <Text style={styles.option}>Crear Categoria</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleCrearArticulo}>
+                <Text style={styles.option}>Crear Articulo</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
     </View>
@@ -95,6 +128,19 @@ const styles = StyleSheet.create({
   },
   categoriesIcon: {
     marginLeft: 10,
+  },
+  optionsContainer: {
+    position: 'absolute',
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 10,
+    bottom: 0,
+    width: '100%',
+  },
+  option: {
+    fontSize: 16,
+    color: '#01063E',
+    marginBottom: 5,
   },
 });
 
