@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, KeyboardAvoidingView, Alert } from 'react-native';
-import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
+import { View, TextInput, TouchableOpacity, Text, Image, StyleSheet, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import Background from './Background';
-import { fontStyles } from '../styles';
 import { Checkbox } from 'react-native-paper';
+import { Feather } from '@expo/vector-icons';
+import axios from 'axios';
 
 type RootStackParamList = {
   Login: undefined;
@@ -28,9 +27,9 @@ const Registro: React.FC<RegistroProps> = ({ navigation }) => {
   const [contraseña, setContraseña] = useState('');
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleRegistro = async () => {
-    // Validar que los campos no estén vacíos
     setErrorMessage('');
     if (!nombre || !correo || !contraseña) {
       setErrorMessage('Favor de completar todos los campos');
@@ -50,21 +49,20 @@ const Registro: React.FC<RegistroProps> = ({ navigation }) => {
         aceptaTerminos,
       });
       console.log(response.data);
-      navigation.navigate('Inicio', { nombre }); // Navegar a la pantalla de inicio con el nombre del usuario
+      navigation.navigate('Inicio', { nombre });
     } catch (error) {
-      //console.error('Error al registrar el usuario:', error);
       console.log(error);
       Alert.alert('Error al registrar el usuario');
     }
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
+    <View style={styles.container}>
       <Background />
       <View style={styles.logoContainer}>
-        {/* <Image source={require('../assets/logo.jpg')} style={styles.logo} /> */}
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
       </View>
-      <Text style={[styles.texto, fontStyles.twCenMT]}>Registro</Text>
+      <Text style={[styles.texto]}>Registro</Text>
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Nombre</Text>
@@ -78,42 +76,55 @@ const Registro: React.FC<RegistroProps> = ({ navigation }) => {
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Contraseña</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="********* "
-            placeholderTextColor="#ffffff"
-            secureTextEntry={true}
-            onChangeText={setContraseña}
-            value={contraseña}
-          />
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="*********"
+              placeholderTextColor="#ffffff"
+              secureTextEntry={!showPassword}
+              onChangeText={setContraseña}
+              value={contraseña}
+            />
+            <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowPassword(!showPassword)}>
+              <Feather name={showPassword ? 'eye' : 'eye-off'} size={24} color="#ffffff" />
+            </TouchableOpacity>
+          </View>
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Correo electrónico</Text>
           <TextInput
             style={styles.input}
-            placeholder="Introduce tu Correo Electrónico "
+            placeholder="Introduce tu Correo Electrónico"
             placeholderTextColor="#ffffff"
             onChangeText={setCorreo}
             value={correo}
           />
         </View>
-        <Checkbox.Item
-          label="Acepto Términos y Condiciones"
-          status={aceptaTerminos ? 'checked' : 'unchecked'}
-          onPress={() => setAceptaTerminos(!aceptaTerminos)}
-          color="#01063E"
-          labelStyle={styles.checkboxLabel}
-        />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Checkbox.Item
+            label=""
+            status={aceptaTerminos ? 'checked' : 'unchecked'}
+            onPress={() => setAceptaTerminos(!aceptaTerminos)}
+            color="#01063E"
+            uncheckedColor="#01063E"
+          />
+          <Text style={styles.checkboxLabel}>Acepto Términos y Condiciones</Text>
+        </View>
       </View>
-      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-      <TouchableOpacity style={styles.button} onPress={handleRegistro}>
-        <Text style={styles.buttonText}>Registrar</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+        <TouchableOpacity style={styles.button} onPress={handleRegistro}>
+          <Text style={styles.buttonText}>Registrar</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.registrarText}>
         ¿Ya tienes una cuenta?
-        <Text style={styles.boldText} onPress={() => navigation.navigate('Login')}> Inicia Sesión</Text>
+        <Text style={styles.boldText} onPress={() => navigation.navigate('Login')}>
+          {' '}
+          Inicia Sesión
+        </Text>
       </Text>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -140,17 +151,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#0094F1',
     padding: 20,
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   texto: {
     fontSize: 30,
     fontWeight: 'bold',
     color: '#ffffff',
     marginBottom: 14,
+    textAlign: 'center',
   },
   inputContainer: {
-    width: '100%',
     marginBottom: 20,
   },
   input: {
@@ -162,35 +171,49 @@ const styles = StyleSheet.create({
     padding: 0,
     fontSize: 15,
   },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#0094F1',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ffffff',
+  },
+  passwordInput: {
+    flex: 1,
+    height: 40,
+    color: '#ffffff',
+    padding: 0,
+    fontSize: 15,
+  },
   inputLabel: {
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  eyeIcon: {
+    padding: 10,
   },
   checkboxLabel: {
     color: '#01063E',
     fontWeight: 'bold',
     fontSize: 14,
   },
+  buttonContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
   button: {
     backgroundColor: '#FFA500',
     paddingVertical: 15,
     borderRadius: 30,
-    alignItems: 'center',
     width: 180,
-    marginTop: 20,
   },
   buttonText: {
     color: '#ffffff',
     fontWeight: 'bold',
     fontSize: 20,
-  },
-  registrarText: {
-    color: '#01063E',
-    fontSize: 14,
-    marginTop: 20,
     textAlign: 'center',
-    fontWeight: 'regular',
   },
   errorText: {
     color: 'black',
@@ -199,6 +222,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 15,
     marginTop: 15,
+  },
+  registrarText: {
+    color: '#01063E',
+    fontSize: 14,
+    marginTop: 20,
+    textAlign: 'center',
+    fontWeight: 'regular',
   },
 });
 

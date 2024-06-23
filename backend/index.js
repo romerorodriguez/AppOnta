@@ -2,12 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql');
 const conexion = require('./database');
+const CryptoJS = require('crypto-js')
 
 const app = express();
 const port = 3000;
 
 app.use(cors({ origin: 'http://localhost:8081' })); //192.168.1.68
 app.use(express.json());
+
+//API para usuarios
 
 app.post('/register', (req, res) => {
     const { nombre, correo, contraseña, aceptaTerminos } = req.body;

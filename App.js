@@ -1,3 +1,4 @@
+// App.js
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
@@ -11,6 +12,9 @@ import Perfil from './components/Perfil';
 import CambiarContrasena from './components/CambiarContrasena';
 import CrearCategoria from './components/CrearCategoria';
 import CrearArticulo from './components/CrearArticulo';
+import ListaCategorias from './components/ListaCategorias';
+import CategoriaSeleccionada from './components/CategoriaSeleccionada';
+import Buscar from './components/Buscar';
 
 const Stack = createNativeStackNavigator();
 
@@ -56,6 +60,21 @@ export default function App() {
         <Stack.Screen
           name="CrearCategoria"
           component={CrearCategoria}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ListaCategorias"
+          component={ListaCategorias}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CategoriaSeleccionada"
+          component={CategoriaSeleccionada}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Buscar"
+          component={Buscar}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

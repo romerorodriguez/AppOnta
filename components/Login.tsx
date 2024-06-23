@@ -1,16 +1,10 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, KeyboardAvoidingView, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, TextInput, TouchableOpacity, Text, Image, StyleSheet, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import Background from './Background';
-import { fontStyles } from '../styles';
-import { Feather } from '@expo/vector-icons'
+import { Feather } from '@expo/vector-icons';
 import axios from 'axios';
-//autenticacion de usuarios con firebase
-// import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-// import { initializeApp } from 'firebase/app';
-// import { firebaseConfig } from '../backend/firebase/authentication';
 
 type RootStackParamList = {
   Login: undefined;
@@ -31,30 +25,17 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const [correo, setCorreo] = useState('');
   const [contraseña, setContraseña] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
-  // const app = initializeApp(firebaseConfig);
-  // const auth = getAuth(app);
-  
   const handleSignIn = async () => {
     setErrorMessage('');
     if (!correo || !contraseña) {
       setErrorMessage('Favor de completar todos los campos');
       return;
     }
-    if (!correo) {
-      setErrorMessage('Complete el campo de correo');
-      return;
-    }
-    if (!contraseña) {
-      setErrorMessage('Complete el campo de contraseña');
-      return;
-    }
 
     try {
-      //const user = await signInWithEmailAndPassword(auth, correo, contraseña);
-      //console.log(user);
-      //verificacion a la base de datos en mysql
-      const response = await axios.post('http://localhost:3000/login', { // Usa la IP de tu máquina
+      const response = await axios.post('http://localhost:3000/login', { 
         correo,
         contraseña,
       });
@@ -68,12 +49,12 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
+    <View style={styles.container}>
       <Background />
       <View style={styles.logoContainer}>
-        {/* <Image source={require('../assets/logo.jpg')} style={styles.logo} /> */}
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
       </View>
-      <Text style={[styles.texto, fontStyles.twCenMT]}>Inicio de Sesión</Text>
+      <Text style={[styles.texto]}>Inicia Sesión</Text>
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Correo electrónico</Text>
@@ -87,29 +68,38 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Contraseña</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="********* "
-            placeholderTextColor="#ffffff"
-            secureTextEntry={true}
-            onChangeText={setContraseña}
-            value={contraseña}
-          />
-          {/* <Feather name={showPassword ? "eye" : "eye-off"} size={24} color="black" /> */}
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="*********"
+              placeholderTextColor="#ffffff"
+              secureTextEntry={!showPassword}
+              onChangeText={setContraseña}
+              value={contraseña}
+            />
+            <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowPassword(!showPassword)}>
+              <Feather name={showPassword ? 'eye' : 'eye-off'} size={24} color="#ffffff" />
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', width: '100%' }}>
-          <Text style={styles.olvidasteContraseñaText} onPress={() => navigation.navigate('RecuperarContrasena')}>¿Olvidaste tu contraseña?</Text>
-        </View>
+        <Text style={styles.olvidasteContraseñaText} onPress={() => navigation.navigate('RecuperarContrasena')}>
+          ¿Olvidaste tu contraseña?
+        </Text>
       </View>
-      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-        <Text style={styles.buttonText}>Inicia Sesión</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+        <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+          <Text style={styles.buttonText}>Inicia Sesión</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.registrarText}>
         ¿No tienes una cuenta?
-        <Text style={styles.boldText} onPress={() => navigation.navigate('Registro')}> Regístrate</Text>
+        <Text style={styles.boldText} onPress={() => navigation.navigate('Registro')}>
+          {' '}
+          Regístrate
+        </Text>
       </Text>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -121,6 +111,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 10,
   },
   boldText: {
@@ -136,17 +127,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#0094F1',
     padding: 20,
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   texto: {
     fontSize: 30,
     fontWeight: 'bold',
     color: '#ffffff',
     marginBottom: 16,
+    textAlign: 'center',
   },
   inputContainer: {
-    width: '100%',
     marginBottom: 20,
   },
   input: {
@@ -158,23 +147,44 @@ const styles = StyleSheet.create({
     padding: 0,
     fontSize: 15,
   },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#0094F1',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ffffff',
+  },
+  passwordInput: {
+    flex: 1,
+    height: 40,
+    color: '#ffffff',
+    padding: 0,
+    fontSize: 15,
+  },
   inputLabel: {
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  eyeIcon: {
+    padding: 10,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    marginTop: 20,
   },
   button: {
     backgroundColor: '#00C29D',
     paddingVertical: 15,
     borderRadius: 30,
-    alignItems: 'center',
     width: 180,
-    marginTop: 20,
   },
   buttonText: {
     color: '#ffffff',
     fontWeight: 'bold',
     fontSize: 20,
+    textAlign: 'center',
   },
   registrarText: {
     color: '#01063E',
@@ -186,9 +196,9 @@ const styles = StyleSheet.create({
   olvidasteContraseñaText: {
     color: '#01063E',
     fontSize: 14,
-    marginTop: 0,
-    textAlign: 'center',
     fontWeight: 'bold',
+    marginTop: 4,
+    textAlign: 'right',
   },
   errorText: {
     color: 'black',
