@@ -4,7 +4,11 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import Background from './Background';
 import { Feather } from '@expo/vector-icons';
+<<<<<<< HEAD
 import axios, { AxiosError } from 'axios';
+=======
+import axios from 'axios';
+>>>>>>> cac461be2cb54c532cda9afcb6014a3d99382fa3
 
 type RootStackParamList = {
   Login: undefined;
@@ -35,7 +39,11 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     }
 
     try {
+<<<<<<< HEAD
       const response = await axios.post('http://localhost:3000/auth/login', { 
+=======
+      const response = await axios.post('http://localhost:3000/login', { 
+>>>>>>> cac461be2cb54c532cda9afcb6014a3d99382fa3
         correo,
         contraseña,
       });

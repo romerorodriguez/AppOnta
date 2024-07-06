@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
+<<<<<<< HEAD
 import { View, StyleSheet, Text, TextInput, TouchableOpacity, Modal, Pressable, ScrollView } from 'react-native';
+=======
+import { View, StyleSheet, Text, TextInput, TouchableOpacity, Modal, Pressable } from 'react-native';
+>>>>>>> cac461be2cb54c532cda9afcb6014a3d99382fa3
 import Background2 from './Background2';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -13,21 +17,31 @@ type CrearCategoriaScreenNavigationProp = StackNavigationProp<RootStackParamList
 const CrearCategoria = () => {
   const navigation = useNavigation<CrearCategoriaScreenNavigationProp>();
   const [showModal, setShowModal] = useState(false);
+<<<<<<< HEAD
   const [showIconModal, setShowIconModal] = useState(false);
   const [showColorModal, setShowColorModal] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [categoryName, setCategoryName] = useState('');
+=======
+  const [successMessage, setSuccessMessage] = useState('');
+>>>>>>> cac461be2cb54c532cda9afcb6014a3d99382fa3
 
   const handleBack = () => {
     navigation.goBack();
   };
 
   const handleGuardar = () => {
+<<<<<<< HEAD
     // Aquí iría la lógica para guardar la categoría en la base de datos
     setSuccessMessage('Guardado con éxito');
     setShowModal(true);
+=======
+    setSuccessMessage('Guardado con éxito');
+    setShowModal(true);
+  
+>>>>>>> cac461be2cb54c532cda9afcb6014a3d99382fa3
   };
 
   const closeModal = () => {
@@ -35,6 +49,7 @@ const CrearCategoria = () => {
     setSuccessMessage(''); // Limpiar el mensaje de éxito
     navigation.navigate('Inicio'); // Navegar a la lista de categorías después de cerrar el modal
   };
+<<<<<<< HEAD
 
   const handleIconSelection = (icon: string) => {
     setSelectedIcon(icon);
@@ -45,6 +60,8 @@ const CrearCategoria = () => {
     setSelectedColor(color);
     setShowColorModal(false);
   };
+=======
+>>>>>>> cac461be2cb54c532cda9afcb6014a3d99382fa3
 
   return (
     <View style={styles.container}>
@@ -66,6 +83,7 @@ const CrearCategoria = () => {
         <TextInput
           style={[styles.input, { marginBottom: 20 }]}
           placeholder="Escribe el nombre de la categoría"
+<<<<<<< HEAD
           value={categoryName}
           onChangeText={setCategoryName}
         />
@@ -77,6 +95,17 @@ const CrearCategoria = () => {
           <TouchableOpacity style={styles.button} onPress={() => setShowColorModal(true)}>
             <Text style={styles.buttonText}>Color</Text>
             <View style={[styles.colorPreview, { backgroundColor: selectedColor || 'deeppink' }]} />
+=======
+        />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button}>
+            <Ionicons name="camera" size={24} color="black" />
+            <Text style={{ marginLeft: 10 }}>Icono</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button}>
+            <View style={styles.colorPreview}></View>
+            <Text style={{ marginLeft: 10 }}>Color</Text>
+>>>>>>> cac461be2cb54c532cda9afcb6014a3d99382fa3
           </TouchableOpacity>
         </View>
       </View>
@@ -84,6 +113,7 @@ const CrearCategoria = () => {
         <Text style={styles.saveButtonText}>Guardar</Text>
       </TouchableOpacity>
 
+<<<<<<< HEAD
       {/* Modal de selección de icono */}
       <Modal
         transparent={true}
@@ -124,6 +154,8 @@ const CrearCategoria = () => {
         </View>
       </Modal>
 
+=======
+>>>>>>> cac461be2cb54c532cda9afcb6014a3d99382fa3
       {/* Modal de éxito */}
       <Modal
         animationType="fade"
@@ -209,6 +241,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     backgroundColor: '#ffffff',
+<<<<<<< HEAD
     borderRadius: 5,
     borderWidth: 1,
     borderColor: 'black', // Borde negro
@@ -222,6 +255,9 @@ const styles = StyleSheet.create({
   },
   rightIcon: {
     marginLeft: 5, // Ajusta la separación entre el icono y el borde
+=======
+    borderRadius: 15,
+>>>>>>> cac461be2cb54c532cda9afcb6014a3d99382fa3
   },
   colorPreview: {
     width: 24,
@@ -242,6 +278,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+<<<<<<< HEAD
   // Estilos para los modales
   modalOverlay: {
     flex: 1,
@@ -278,6 +315,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 12,
   },
+=======
+  // Estilos para el modal
+>>>>>>> cac461be2cb54c532cda9afcb6014a3d99382fa3
   modalBackground: {
     flex: 1,
     justifyContent: 'center',
@@ -286,6 +326,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: 'white',
+<<<<<<< HEAD
     padding: 30,
     borderRadius: 10,
     alignItems: 'center',
@@ -295,10 +336,33 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     backgroundColor: '#0B610B',
+=======
+    padding: 20,
+    borderRadius: 10,
+    width: '80%', // Ajusta el ancho según necesites
+    maxHeight: '80%', // Ajusta la altura máxima según necesites
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#01063E',
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 20,
+    color: 'black',
+    textAlign: 'center',
+  },
+  successCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#00C29D',
+>>>>>>> cac461be2cb54c532cda9afcb6014a3d99382fa3
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
   },
+<<<<<<< HEAD
   modalText: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -310,6 +374,12 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 10,
     elevation: 2,
+=======
+  modalCloseButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+>>>>>>> cac461be2cb54c532cda9afcb6014a3d99382fa3
   },
 });
 
