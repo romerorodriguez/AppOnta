@@ -1,49 +1,75 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Dimensions, Modal, TouchableWithoutFeedback } from 'react-native';
 import Background from './Background';
 import { Ionicons } from '@expo/vector-icons';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation, useRoute, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from './types';
+
+const { width } = Dimensions.get('window');
+
+const initialCategoriesData = [
+  { id: '1', title: 'Categoría 1', articlesCount: 5, color: '#FFA07A', icon: 'home' },
+  { id: '2', title: 'Categoría 2', articlesCount: 3, color: '#20B2AA', icon: 'car' },
+  { id: '3', title: 'Categoría 3', articlesCount: 8, color: '#778899', icon: 'book' },
+  { id: '4', title: 'Categoría 4', articlesCount: 2, color: '#8FBC8F', icon: 'business' },
+  { id: '5', title: 'Categoría 5', articlesCount: 7, color: '#FFB6C1', icon: 'camera' },
+  { id: '6', title: 'Categoría 6', articlesCount: 4, color: '#F0E68C', icon: 'gift' },
+  { id: '7', title: 'Categoría 7', articlesCount: 6, color: '#DDA0DD', icon: 'musical-notes' },
+  { id: '8', title: 'Categoría 8', articlesCount: 9, color: '#B0E0E6', icon: 'paw' },
+  { id: '9', title: 'Categoría 9', articlesCount: 1, color: '#FFD700', icon: 'plane' },
+  { id: '10', title: 'Categoría 10', articlesCount: 11, color: '#98FB98', icon: 'restaurant' },
+];
 
 type RouteParams = {
   nombre: string;
 };
 
-type InicioScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Inicio'>; // Define el tipo de navegación
-
 const Inicio = () => {
-  const navigation = useNavigation<InicioScreenNavigationProp>(); // Usa el tipo de navegación
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute();
-  const { nombre } = route.params as RouteParams; // Obtenemos el nombre del usuario registrado
+  const { nombre } = route.params as RouteParams;
 
-  const [showOptions, setShowOptions] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [categories, setCategories] = useState(initialCategoriesData);
+  //const [showOptions, setShowOptions] = useState(false);
 
-  const toggleOptions = () => {
-    setShowOptions(!showOptions);
+  const handleMenuPress = () => {
+    navigation.navigate('Perfil');
   };
 
-  const handleCrearCategoria = () => {
+  const handleMoreOptionsPress = () => {
+    setModalVisible(true);
+  };
+
+  const handleCreateCategory = () => {
+    setModalVisible(false);
     navigation.navigate('CrearCategoria');
-    setShowOptions(false); // Oculta las opciones después de navegar
   };
 
-  const handleCrearArticulo = () => {
+  const handleCreateArticle = () => {
+    setModalVisible(false);
     navigation.navigate('CrearArticulo');
-    setShowOptions(false); // Oculta las opciones después de navegar
+  };
+
+  const handleDeleteCategory = (categoryId: string) => {
+    setCategories(categories.filter((category: { id: string }) => category.id !== categoryId));
+  };
+
+  const handleCategoryPress = (categoryId: string, categoryTitle: string) => {
+    navigation.navigate('ListaCategorias');
   };
 
   return (
     <View style={styles.container}>
       <Background />
       <View style={styles.headerContainer}>
-        <View>
-          <View style={styles.textWithIconContainer}>
-            <Text style={styles.text}>Hola,</Text>
+        <View style={styles.textWithIconContainer}>
+          <Text style={styles.text1}>Hola,</Text>
+          <TouchableOpacity onPress={handleMenuPress}>
             <Ionicons name="menu" size={32} color="#ffffff" style={styles.icon} />
-          </View>
-          <Text style={styles.text}>{nombre}</Text> {/* Mostramos el nombre del usuario */}
+          </TouchableOpacity>
         </View>
+         <Text style={styles.text}>{nombre}</Text> {/*Muestra el nombre del usuario */}
         <View style={styles.searchBarContainer}>
           <Ionicons name="search" size={24} color="#01063E" style={styles.searchIcon} />
           <TextInput
@@ -51,25 +77,64 @@ const Inicio = () => {
             placeholder="Buscar..."
             placeholderTextColor="#01063E"
             selectionColor="#01063E"
+            onFocus={() => navigation.navigate('Buscar')} //navegar a la pantalla de búsqueda
           />
         </View>
-        <View style={styles.categoriesContainer}>
+        <View style={styles.categoriesHeaderContainer}>
           <Text style={styles.text3}>Categorías</Text>
-          <TouchableOpacity onPress={toggleOptions}>
-            <Ionicons name="ellipsis-horizontal" size={24} color="#ffffff" style={styles.categoriesIcon} />
+          <TouchableOpacity onPress={handleMoreOptionsPress}>
+            <Ionicons name="ellipsis-horizontal" size={24} color="#ffffff" style={styles.moreOptionsIcon} />
           </TouchableOpacity>
-          {showOptions && (
-            <View style={styles.optionsContainer}>
-              <TouchableOpacity onPress={handleCrearCategoria}>
-                <Text style={styles.option}>Crear Categoria</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleCrearArticulo}>
-                <Text style={styles.option}>Crear Articulo</Text>
-              </TouchableOpacity>
-            </View>
-          )}
         </View>
       </View>
+
+      <FlatList
+        data={categories}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[styles.categoryItem, { backgroundColor: item.color }]}
+            onPress={() => handleCategoryPress(item.id, item.title)}
+          >
+            <Ionicons name={item.icon} size={32} color="#ffffff" style={styles.categoryIcon} />
+            <View style={styles.categoryContent}>
+              <View style={styles.categoryTextContainer}>
+                <Text style={styles.categoryTitle}>{item.title}</Text>
+                <Text style={styles.categoryArticlesCount}>{item.articlesCount} artículos</Text>
+              </View>
+            </View>
+            <View style={styles.categoryIcons}>
+              <TouchableOpacity onPress={handleCreateArticle}>
+                <Ionicons name="add" size={24} color="#ffffff" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDeleteCategory(item.id)}>
+                <Ionicons name="trash" size={24} color="#ffffff" />
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        contentContainerStyle={styles.categoriesList}
+      />
+      {/*Modal de opciones*/}
+      <Modal
+        transparent={true}
+        visible={modalVisible}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+          <View style={styles.modalOverlay} />
+        </TouchableWithoutFeedback>
+        <View style={styles.modalContainer}>
+          <TouchableOpacity style={styles.modalOption} onPress={handleCreateCategory}>
+            <Text style={styles.modalOptionText}>Crear Categoría</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.modalOption} onPress={handleCreateArticle}>
+            <Text style={styles.modalOptionText}>Crear Artículo</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -79,10 +144,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    right: 20,
+    paddingTop: 50,
+    paddingHorizontal: 20,
+    paddingBottom: 10,
   },
   textWithIconContainer: {
     flexDirection: 'row',
@@ -90,7 +154,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   text: {
-    fontSize: 30,
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  text1: {
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#ffffff',
   },
@@ -115,10 +184,10 @@ const styles = StyleSheet.create({
   searchIcon: {
     marginRight: 10,
   },
-  categoriesContainer: {
+  categoriesHeaderContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // Asegura que los elementos estén en extremos opuestos
+    justifyContent: 'space-between',
     marginTop: 20,
   },
   text3: {
@@ -126,21 +195,67 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#ffffff',
   },
-  categoriesIcon: {
+  moreOptionsIcon: {
     marginLeft: 10,
   },
-  optionsContainer: {
-    position: 'absolute',
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    padding: 10,
-    bottom: 0,
-    width: '100%',
+  categoriesList: {
+    paddingHorizontal: 10,
+    alignItems: 'center',
   },
-  option: {
-    fontSize: 16,
+  categoryItem: {
+    width: (width - 60) / 2,
+    height: (width - 60) / 2,
+    margin: 10,
+    padding: 20,
+    borderRadius: 10,
+    justifyContent: 'space-between',
+  },
+  categoryContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  categoryIcon: {
+    marginRight: 10,
+  },
+  categoryTextContainer: {
+    flexDirection: 'column',
+  },
+  categoryTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    textAlign: 'left',
+  },
+  categoryArticlesCount: {
+    fontSize: 14,
+    color: '#ffffff',
+    marginTop: 5,
+    textAlign: 'left',
+  },
+  categoryIcons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    padding: 20,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  modalOption: {
+    paddingVertical: 15,
+  },
+  modalOptionText: {
+    fontSize: 18,
     color: '#01063E',
-    marginBottom: 5,
   },
 });
 
