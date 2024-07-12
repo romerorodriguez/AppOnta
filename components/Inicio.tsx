@@ -7,31 +7,26 @@ import { RootStackParamList } from './types';
 
 const { width } = Dimensions.get('window');
 
-const initialCategoriesData = [
-  { id: '1', title: 'Categoría 1', articlesCount: 5, color: '#FFA07A', icon: 'home' },
-  { id: '2', title: 'Categoría 2', articlesCount: 3, color: '#20B2AA', icon: 'car' },
-  { id: '3', title: 'Categoría 3', articlesCount: 8, color: '#778899', icon: 'book' },
-  { id: '4', title: 'Categoría 4', articlesCount: 2, color: '#8FBC8F', icon: 'business' },
-  { id: '5', title: 'Categoría 5', articlesCount: 7, color: '#FFB6C1', icon: 'camera' },
-  { id: '6', title: 'Categoría 6', articlesCount: 4, color: '#F0E68C', icon: 'gift' },
-  { id: '7', title: 'Categoría 7', articlesCount: 6, color: '#DDA0DD', icon: 'musical-notes' },
-  { id: '8', title: 'Categoría 8', articlesCount: 9, color: '#B0E0E6', icon: 'paw' },
-  { id: '9', title: 'Categoría 9', articlesCount: 1, color: '#FFD700', icon: 'plane' },
-  { id: '10', title: 'Categoría 10', articlesCount: 11, color: '#98FB98', icon: 'restaurant' },
-];
-
 type RouteParams = {
   nombre: string;
-};
+}
+
+const initialCategoriesData = [
+  { id: '1', title: 'Casa', articlesCount: 5, color: '#FE3777', icon: 'home' },
+  { id: '2', title: 'Trabajo', articlesCount: 3, color: '#0270D0', icon: 'briefcase' },
+  { id: '3', title: 'Universidad', articlesCount: 8, color: '#FFC301', icon: 'book' },
+  { id: '4', title: 'Compras', articlesCount: 2, color: '#00B48C', icon: 'pricetags' },
+];
 
 const Inicio = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute();
   const { nombre } = route.params as RouteParams;
-
   const [modalVisible, setModalVisible] = useState(false);
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState('');
+
   const [categories, setCategories] = useState(initialCategoriesData);
-  //const [showOptions, setShowOptions] = useState(false);
 
   const handleMenuPress = () => {
     navigation.navigate('Perfil');
@@ -43,7 +38,7 @@ const Inicio = () => {
 
   const handleCreateCategory = () => {
     setModalVisible(false);
-    navigation.navigate('CrearCategoria');
+    navigation.navigate('CrearCategoria', {nombre});
   };
 
   const handleCreateArticle = () => {
@@ -52,10 +47,21 @@ const Inicio = () => {
   };
 
   const handleDeleteCategory = (categoryId: string) => {
-    setCategories(categories.filter((category: { id: string }) => category.id !== categoryId));
+    setSelectedCategoryId(categoryId);
+    setConfirmModalVisible(true);
   };
 
-  const handleCategoryPress = (categoryId: string, categoryTitle: string) => {
+  const confirmDeleteCategory = () => {
+    setCategories(categories.filter((category) => category.id !== selectedCategoryId));
+    setConfirmModalVisible(false);
+  };
+
+  const cancelDeleteCategory = () => {
+    setSelectedCategoryId('');
+    setConfirmModalVisible(false);
+  };
+
+  const handleCategoryPress = (categoryId: any, categoryTitle: any) => {
     navigation.navigate('ListaCategorias');
   };
 
@@ -69,19 +75,19 @@ const Inicio = () => {
             <Ionicons name="menu" size={32} color="#ffffff" style={styles.icon} />
           </TouchableOpacity>
         </View>
-         <Text style={styles.text}>{nombre}</Text> {/*Muestra el nombre del usuario */}
+        <Text style={styles.text}>{ nombre }</Text>
         <View style={styles.searchBarContainer}>
-          <Ionicons name="search" size={24} color="#01063E" style={styles.searchIcon} />
+          <Ionicons name="search" size={24} color="#000033" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
             placeholder="Buscar..."
-            placeholderTextColor="#01063E"
-            selectionColor="#01063E"
-            onFocus={() => navigation.navigate('Buscar')} //navegar a la pantalla de búsqueda
+            placeholderTextColor="#000033"
+            selectionColor="#000033"
+            onFocus={() => navigation.navigate('Buscar')}
           />
         </View>
         <View style={styles.categoriesHeaderContainer}>
-          <Text style={styles.text3}>Categorías</Text>
+          <Text style={styles.text3}>Categorias</Text>
           <TouchableOpacity onPress={handleMoreOptionsPress}>
             <Ionicons name="ellipsis-horizontal" size={24} color="#ffffff" style={styles.moreOptionsIcon} />
           </TouchableOpacity>
@@ -116,7 +122,8 @@ const Inicio = () => {
         numColumns={2}
         contentContainerStyle={styles.categoriesList}
       />
-      {/*Modal de opciones*/}
+
+      {/* Modal de Opciones */}
       <Modal
         transparent={true}
         visible={modalVisible}
@@ -133,6 +140,31 @@ const Inicio = () => {
           <TouchableOpacity style={styles.modalOption} onPress={handleCreateArticle}>
             <Text style={styles.modalOptionText}>Crear Artículo</Text>
           </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {/* Modal de Confirmación para Eliminar Categoría */}
+      <Modal
+        transparent={true}
+        visible={confirmModalVisible}
+        animationType="fade"
+        onRequestClose={() => setConfirmModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setConfirmModalVisible(false)}>
+          <View style={styles.modalOverlay} />
+        </TouchableWithoutFeedback>
+        <View style={styles.confirmModalContainer}>
+          <View style={styles.confirmModalContent}>
+            <Text style={styles.confirmModalText}>¿Seguro que quieres eliminar esta categoría?</Text>
+            <View style={styles.confirmModalButtons}>
+              <TouchableOpacity style={styles.confirmButton} onPress={confirmDeleteCategory}>
+                <Text style={styles.confirmButtonText}>Confirmar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.cancelButton} onPress={cancelDeleteCategory}>
+                <Text style={styles.cancelButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </Modal>
     </View>
@@ -178,7 +210,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     height: 40,
-    color: '#01063E',
+    color: '#000033',
     paddingHorizontal: 10,
   },
   searchIcon: {
@@ -255,7 +287,51 @@ const styles = StyleSheet.create({
   },
   modalOptionText: {
     fontSize: 18,
-    color: '#01063E',
+    color: '#000033',
+  },
+  confirmModalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  confirmModalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  confirmModalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  confirmModalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+  },
+  confirmButton: {
+    backgroundColor: '#FE3777',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  confirmButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  cancelButton: {
+    backgroundColor: '#0270D0',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  cancelButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
 

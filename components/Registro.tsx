@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, Image, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, Image, StyleSheet, Dimensions, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { KeyboardAwareScrollView } from '@codler/react-native-keyboard-aware-scroll-view';
 import Background from './Background';
 import { Checkbox } from 'react-native-paper';
 import { Feather } from '@expo/vector-icons';
@@ -10,7 +11,7 @@ import axios from 'axios';
 type RootStackParamList = {
   Login: undefined;
   Registro: undefined;
-  Inicio: { nombre: string };
+  Inicio: { nombre:string };
 };
 
 type RegistroScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Registro'>;
@@ -63,80 +64,91 @@ const Registro: React.FC<RegistroProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Background />
-      <View style={styles.logoContainer}>
-        <Image source={require('../assets/logo.png')} style={styles.logo} />
-      </View>
-      <Text style={[styles.texto]}>Registro</Text>
-      <View style={styles.formContainer}>
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Nombre</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Introduce tu nombre"
-            placeholderTextColor="#ffffff"
-            onChangeText={setNombre}
-            value={nombre}
-          />
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        enableOnAndroid={true}
+        extraScrollHeight={20}
+      >
+        <View style={styles.logoContainer}>
+          <Image source={require('../assets/logo.png')} style={styles.logo} />
         </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Contraseña</Text>
-          <View style={styles.passwordContainer}>
+        <Text style={styles.texto}>Registro</Text>
+        <View style={styles.formContainer}>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Nombre</Text>
             <TextInput
-              style={styles.passwordInput}
-              placeholder="*********"
+              style={styles.input}
+              placeholder="Introduce tu nombre"
               placeholderTextColor="#ffffff"
-              secureTextEntry={!showPassword}
-              onChangeText={setContraseña}
-              value={contraseña}
+              onChangeText={setNombre}
+              value={nombre}
             />
-            <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowPassword(!showPassword)}>
-              <Feather name={showPassword ? 'eye' : 'eye-off'} size={24} color="#ffffff" />
-            </TouchableOpacity>
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Contraseña</Text>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder="********* "
+                placeholderTextColor="#ffffff"
+                secureTextEntry={!showPassword}
+                onChangeText={setContraseña}
+                value={contraseña}
+              />
+              <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowPassword(!showPassword)}>
+                <Feather name={showPassword ? 'eye' : 'eye-off'} size={24} color="#ffffff" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Correo electrónico</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Introduce tu Correo Electrónico "
+              placeholderTextColor="#ffffff"
+              onChangeText={setCorreo}
+              value={correo}
+            />
+          </View>
+          <View style={styles.checkboxContainer}>
+            <Checkbox.Android
+              status={aceptaTerminos ? 'checked' : 'unchecked'}
+              onPress={() => setAceptaTerminos(!aceptaTerminos)}
+              color="#000033"
+              uncheckedColor="#000033"
+            />
+            <Text style={styles.checkboxLabel}>Acepto Terminos y Condiciones</Text>
           </View>
         </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Correo electrónico</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Introduce tu Correo Electrónico"
-            placeholderTextColor="#ffffff"
-            onChangeText={setCorreo}
-            value={correo}
-          />
+        <View style={styles.buttonContainer}>
+          {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+          <TouchableOpacity style={styles.button} onPress={handleRegistro}>
+            <Text style={styles.buttonText}>Registrar</Text>
+          </TouchableOpacity>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Checkbox.Item
-            label=""
-            status={aceptaTerminos ? 'checked' : 'unchecked'}
-            onPress={() => setAceptaTerminos(!aceptaTerminos)}
-            color="#01063E"
-            uncheckedColor="#01063E"
-          />
-          <Text style={styles.checkboxLabel}>Acepto Términos y Condiciones</Text>
-        </View>
-      </View>
-      <View style={styles.buttonContainer}>
-        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-        <TouchableOpacity style={styles.button} onPress={handleRegistro}>
-          <Text style={styles.buttonText}>Registrar</Text>
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.registrarText}>
-        ¿Ya tienes una cuenta?
-        <Text style={styles.boldText} onPress={() => navigation.navigate('Login')}>
-          {' '}
-          Inicia Sesión
+        <Text style={styles.registrarText}>
+          ¿Ya tienes una cuenta?
+          <Text style={styles.boldText} onPress={() => navigation.navigate('Login')}>
+            {' '}
+            Inicia Sesión
+          </Text>
         </Text>
-      </Text>
+      </KeyboardAwareScrollView>
     </View>
   );
 };
 
+const windowHeight = Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: 20,
   },
   logoContainer: {
     alignItems: 'center',
@@ -198,17 +210,23 @@ const styles = StyleSheet.create({
   eyeIcon: {
     padding: 10,
   },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   checkboxLabel: {
-    color: '#01063E',
+    color: '#000033',
     fontWeight: 'bold',
     fontSize: 14,
+    marginLeft: 8,
   },
   buttonContainer: {
     alignItems: 'center',
     marginTop: 20,
   },
   button: {
-    backgroundColor: '#FFA500',
+    backgroundColor: '#FF7306',
     paddingVertical: 15,
     borderRadius: 30,
     width: 180,
@@ -228,11 +246,11 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   registrarText: {
-    color: '#01063E',
+    color: '#000033',
     fontSize: 14,
     marginTop: 20,
     textAlign: 'center',
-    fontWeight: 'regular',
+    fontWeight: 'normal',
   },
 });
 

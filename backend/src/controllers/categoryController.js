@@ -1,7 +1,7 @@
 const db = require('../services/database/database');
 const categoryService = require('../services/categoryService');
 
-exports.createCategory = async (req, res) => {
+const createCategory = async (req, res) => {
     const { id_user, title, color, icon } = req.body;
 
     if (!id_user || !title || !color || !icon) {
@@ -16,7 +16,7 @@ exports.createCategory = async (req, res) => {
     }
 };
 
-exports.getCategoriesByUser = async (req, res) => {
+const getCategoriesByUser = async (req, res) => {
     const { userId } = req.params;
 
     try {
@@ -25,4 +25,9 @@ exports.getCategoriesByUser = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: 'Error al obtener las categorías', error: err });
     }
+};
+
+module.exports = {
+    createCategory,
+    getCategoriesByUser,
 };

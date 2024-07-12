@@ -4,7 +4,7 @@ export const icons = [
     { name: 'school', label: 'Escuela' },
     { name: 'medkit', label: 'Salud' },
     { name: 'car', label: 'Carro' },
-    { name: 'book', label: 'Libro' },
+    { name: 'book', label: 'Biblioteca' },
     { name: 'business', label: 'Negocio' },
     { name: 'camera', label: 'Cámara' },
     { name: 'gift', label: 'Regalo' },
