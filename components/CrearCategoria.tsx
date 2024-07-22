@@ -7,9 +7,11 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './types';
 import { icons } from './icons/icons';
 import { colors } from './colors/colors';
+import axios from 'axios';
 
 type RouteParams = {
   nombre: string;
+  id_user: string;
 };
 
 type CrearCategoriaScreenNavigationProp = StackNavigationProp<RootStackParamList, 'CrearCategoria'>;
@@ -17,13 +19,13 @@ type CrearCategoriaScreenNavigationProp = StackNavigationProp<RootStackParamList
 const CrearCategoria = () => {
   const navigation = useNavigation<CrearCategoriaScreenNavigationProp>();
   const route = useRoute();
-  const { nombre } = route.params as RouteParams;
+  const { nombre, id_user } = route.params as RouteParams;
 
   const [showModal, setShowModal] = useState(false);
   const [showIconModal, setShowIconModal] = useState(false);
   const [showColorModal, setShowColorModal] = useState(false);
-  const [selectedIcon, setSelectedIcon] = useState('');
-  const [selectedColor, setSelectedColor] = useState('');
+  const [icon, setIcon] = useState('');
+  const [color, setColor] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [categoryName, setCategoryName] = useState('');
 
@@ -31,10 +33,24 @@ const CrearCategoria = () => {
     navigation.goBack();
   };
 
-  const handleGuardar = () => {
+  const handleGuardar = async () => {
     // Aquí iría la lógica para guardar la categoría en la base de datos
-    setSuccessMessage('Guardado con éxito');
-    setShowModal(true);
+    try {
+      const response = await axios.post('http://localhost:3000/categories/create', {
+        title: categoryName,
+        color: color,
+        icono: icon,
+        id_user: id_user
+      }); 
+      setSuccessMessage('Guardado con éxito');
+      setShowModal(true);
+      setCategoryName("");
+      setColor("");
+      setIcon("");
+    } catch (error){
+      console.error(error);
+      setSuccessMessage('Error al guardar la categoría');
+    }
   };
 
   const closeModal = () => {
@@ -44,12 +60,12 @@ const CrearCategoria = () => {
   };
 
   const handleIconSelection = (icon: string) => {
-    setSelectedIcon(icon);
+    setIcon(icon);
     setShowIconModal(false);
   };
 
   const handleColorSelection = (color: string) => {
-    setSelectedColor(color);
+    setColor(color);
     setShowColorModal(false);
   };
 
@@ -79,11 +95,11 @@ const CrearCategoria = () => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={() => setShowIconModal(true)}>
             <Text style={styles.buttonText}>Icono</Text>
-            <Ionicons name={selectedIcon || 'happy-outline'} size={24} color="black" style={styles.rightIcon} />
+            <Ionicons name={icon || 'happy-outline'} size={24} color="black" style={styles.rightIcon} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={() => setShowColorModal(true)}>
             <Text style={styles.buttonText}>Color</Text>
-            <View style={[styles.colorPreview, { backgroundColor: selectedColor || 'deeppink' }]} />
+            <View style={[styles.colorPreview, { backgroundColor: color || 'deeppink' }]} />
           </TouchableOpacity>
         </View>
       </View>

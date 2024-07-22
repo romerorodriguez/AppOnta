@@ -36,7 +36,6 @@ const Registro: React.FC<RegistroProps> = ({ navigation }) => {
       setErrorMessage('Favor de completar todos los campos');
       return;
     }
-
     if (!aceptaTerminos) {
       setErrorMessage('Favor de aceptar términos y condiciones');
       return;

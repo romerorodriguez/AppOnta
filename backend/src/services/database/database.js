@@ -1,12 +1,14 @@
-const mysql = require('mysql');
+const mysql = require('mysql'); 
 
-const conexion = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    port: '3307',
-    password: '122333',
-    database: 'AppOnta'
-});
+const dbConfig = {
+    host: process.env.APPONTA_DB_HOST,
+    user: process.env.APPONTA_DB_USER,
+    password: process.env.APPONTA_DB_PASSWORD,
+    database: process.env.APPONTA_DB_NAME,
+    port: process.env.APPONTA_DB_PORT
+};
+
+const conexion = mysql.createConnection(dbConfig);
 
 conexion.connect((err) => {
     if (err) {

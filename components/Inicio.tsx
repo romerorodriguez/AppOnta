@@ -1,32 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Dimensions, Modal, TouchableWithoutFeedback } from 'react-native';
 import Background from './Background';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from './types';
+import axios from 'axios';
 
 const { width } = Dimensions.get('window');
 
 type RouteParams = {
   nombre: string;
+  id_user: string;
 }
 
-const initialCategoriesData = [
-  { id: '1', title: 'Casa', articlesCount: 5, color: '#FE3777', icon: 'home' },
-  { id: '2', title: 'Trabajo', articlesCount: 3, color: '#0270D0', icon: 'briefcase' },
-  { id: '3', title: 'Universidad', articlesCount: 8, color: '#FFC301', icon: 'book' },
-  { id: '4', title: 'Compras', articlesCount: 2, color: '#00B48C', icon: 'pricetags' },
-];
+type Category = {
+  id: string;
+  title: string;
+  icon: string;
+  color: string;
+  articlesCount: number;
+}
 
 const Inicio = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute();
-  const { nombre } = route.params as RouteParams;
+  const { nombre, id_user } = route.params as RouteParams;
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
+  const [categories, setCategories] = useState<Category[]>([]);
 
-  const [categories, setCategories] = useState(initialCategoriesData);
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/categories/${id_user}`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error(error);
+      console.log('Error al obtener las categorías');
+    }
+  }
 
   const handleMenuPress = () => {
     navigation.navigate('Perfil');
@@ -38,7 +54,7 @@ const Inicio = () => {
 
   const handleCreateCategory = () => {
     setModalVisible(false);
-    navigation.navigate('CrearCategoria', {nombre});
+    navigation.navigate('CrearCategoria', { nombre });
   };
 
   const handleCreateArticle = () => {

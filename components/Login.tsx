@@ -34,7 +34,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
       setErrorMessage('Favor de completar todos los campos');
       return;
     }
-
     try {
       const response = await axios.post('http://localhost:3000/auth/login', { 
         correo,

@@ -6,7 +6,7 @@ const register = async (req, res) => {
         const result = await authService.registerUser(nombre, correo, contraseña, aceptaTerminos);
         res.status(200).send('Usuario registrado con éxito');
     } catch (err) {
-        console.error('Error al registrar el usuario:', err);
+        console.error(err);
         res.status(500).send('Error al registrar el usuario');
     }
 };
@@ -17,7 +17,7 @@ const login = async (req, res) => {
         const user = await authService.loginUser(correo, contraseña);
         res.status(200).json(user);
     } catch (err) {
-        console.error('Error al iniciar sesión:', err);
+        console.error(err);
         res.status(500).send('Error al iniciar sesión');
     }
 };
