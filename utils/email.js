@@ -1,5 +1,3 @@
-// email.js
-
 import { MailComposer } from 'expo';
 
 const enviarCodigoVerificacion = async (correo, codigoVerificacion) => {

@@ -1,4 +1,3 @@
-// types.ts
 export type RootStackParamList = {
   Login: undefined;
   Registro: undefined;
@@ -16,3 +15,11 @@ export type RootStackParamList = {
   };
   Buscar: undefined;
 };
+
+export interface Category  {
+  id: string;
+  title: string;
+  icon: string;
+  color: string;
+  articlesCount: number;
+}

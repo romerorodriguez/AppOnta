@@ -4,6 +4,7 @@ import Background from './Background';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from './types';
+import { Category } from './types';
 import axios from 'axios';
 
 const { width } = Dimensions.get('window');
@@ -11,14 +12,6 @@ const { width } = Dimensions.get('window');
 type RouteParams = {
   nombre: string;
   id_user: string;
-}
-
-type Category = {
-  id: string;
-  title: string;
-  icon: string;
-  color: string;
-  articlesCount: number;
 }
 
 const Inicio = () => {
@@ -30,7 +23,7 @@ const Inicio = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
 
-  useEffect(() => {
+  useEffect (() => {
     fetchCategories();
   }, []);
 
@@ -39,8 +32,7 @@ const Inicio = () => {
       const response = await axios.get(`http://localhost:3000/categories/${id_user}`);
       setCategories(response.data);
     } catch (error) {
-      console.error(error);
-      console.log('Error al obtener las categorías');
+      console.error('Error al mostrar las categorías', error);
     }
   }
 

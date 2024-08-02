@@ -20,7 +20,6 @@ const CrearCategoria = () => {
   const navigation = useNavigation<CrearCategoriaScreenNavigationProp>();
   const route = useRoute();
   const { nombre, id_user } = route.params as RouteParams;
-
   const [showModal, setShowModal] = useState(false);
   const [showIconModal, setShowIconModal] = useState(false);
   const [showColorModal, setShowColorModal] = useState(false);
@@ -35,21 +34,19 @@ const CrearCategoria = () => {
 
   const handleGuardar = async () => {
     // Aquí iría la lógica para guardar la categoría en la base de datos
-    try {
-      const response = await axios.post('http://localhost:3000/categories/create', {
-        title: categoryName,
-        color: color,
+    try { 
+      const response = await axios.post('http://localhost:3000/categories', {
+        nombre: categoryName,
         icono: icon,
-        id_user: id_user
-      }); 
+        color: color,
+      });
       setSuccessMessage('Guardado con éxito');
       setShowModal(true);
-      setCategoryName("");
-      setColor("");
-      setIcon("");
-    } catch (error){
-      console.error(error);
-      setSuccessMessage('Error al guardar la categoría');
+      setCategoryName(''); // Limpiar el nombre de la categoría
+      setIcon('');
+      setColor('');
+    } catch (error) {
+      console.error('Error al guardar la categoría:', error);
     }
   };
 
